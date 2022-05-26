@@ -1,0 +1,49 @@
+~/.gitconfig
+    move ~/.gitconfig to ~/.config/git/config where config is the new file
+
+locale
+    # Debian based for sorting dotfiles first and 24 hour time
+    # Updates in /etc/default/locale
+    locale-gen "C" "en_GB.UTF-8"
+    update-locale LANG="en_US.UTF-8" LC_COLLATE="C" LC_TIME="en_GB.UTF-8"
+    source /etc/default/locale
+
+    # Arch based
+    # Updates it in /etc/locale.conf
+    localectl set-locale LANG="en_US.UTF-8" LC_COLLATE="C" LC_TIME="en_GB.UTF-8"
+    reboot
+
+disable ~/.sudo_as_admin_successful in Ubuntu based for sudo v1.9.5+
+    echo 'Defaults !admin_flag' >> /etc/sudoers.d
+    delete/comment out "sudo hint" block in /etc/bash.bashrc
+
+Move ~/.python_history
+    change history variable in /usr/lib/python<PYTHON_VERSION>/site.py
+
+.bashrc
+    # \green{[23:59:59]}:\blue{~/home/user}$ command
+    PS1='\[\033[01;32m\][\t]\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+
+    # \green{[23:59:59]} \darkblue{user}: \lightblue{dir}$ command
+    PS1='\[\e[0;38;5;28m\][\[\e[0;38;5;28m\]\t\[\e[0;38;5;28m\]] \[\e[0;38;5;25m\]\u\[\e[0m\]: \[\e[0;38;5;38m\]\W\[\e[0m\]$ \[\e[0m\]'
+
+Remove MOTD in Ubuntu based
+    chmod -x /etc/update-motd.d/*
+    prevent if statement from running in /etc/profile.d/update-motd.sh
+
+Vim configs
+    echo 'set softtabstop=-1 shiftwidth=4 tabstop=4 expandtab' >> /etc/vim/vimrc
+    echo 'set cursorline' >> /etc/vim/vimrc
+    echo 'hi CursorLine cterm=NONE ctermbg=234 ctermfg=white' >> /etc/vim/vimrc
+    echo 'viminfo+=n~/.locale/viminfo' >> /etc/vim/vimrc  # Moves ~/.viminfo file away
+
+LaTeX
+    usually install "texlive-latex-extra" because "texlive-full" is too big and
+        has enough packages for usually needs
+    echo 'TEXMFHOME=~/.config/texmf' >> /etc/texmf/web2c/texmf.cnf
+    echo 'TEXMFVAR=~/.config/texmf-var' >> /etc/texmf/web2c/texmf.cnf
+    echo 'TEXMFCONFIG=~/.config/texmf-config' >> /etc/texmf/web2c/texmf.cnf
+    update-texmf
+
+Julia
+    echo 'export JULIA_DEPOT_PATH=~/.locale/julia' >> .profile || .bash_profile
