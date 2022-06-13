@@ -47,3 +47,7 @@ LaTeX
 
 Julia
     echo 'export JULIA_DEPOT_PATH=~/.locale/julia' >> .profile || .bash_profile
+
+Linux Mint specifics
+    # Stops moving widgets in lockscreen
+    gsettings set org.cinnamon.desktop.screensaver floating-widgets false
