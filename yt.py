@@ -48,10 +48,6 @@ class Logger(object):
     These methods are to create manual log messages by the programmer
     """
     @staticmethod
-    def prompt(message):
-        print(termcolor.colored("[PROMPT]", "blue"), message)
-
-    @staticmethod
     def info(message):
         print(termcolor.colored("[INFO]", "green"), message)
 
@@ -73,9 +69,9 @@ class Logger(object):
 
     """These methods here are to only be used and called by youtube_dl"""
     @staticmethod
-    def hooks(h):
-        if h["status"] == "finished":
-            Logger.info(f"Finished downloading Web file: {h['filename']}")
+    def hooks(hook):
+        if hook["status"] == "finished":
+            Logger.info(f"Finished downloading Web file: {hook['filename']}")
 
     def debug(self, message):
         pass
@@ -148,7 +144,7 @@ def parse_user_arguments():
         if argument in ("-h", "--help"):
             Logger.info("Downloads youtube music videos as mp3 files")
             Logger.info("Ideally be in the same directory as this script")
-            Logger.info("Usage: yt.py [--artist=<artist>] " +
+            Logger.info("Usage: yt.py [--artist=<artist>] "
                         "[--album=<album>] --url=<url>")
             sys.exit(0)
         elif argument in ("-A", "--artist"):
@@ -164,7 +160,7 @@ def parse_user_arguments():
 
     if not url:
         Logger.err("No URL specified")
-        Logger.info("Usage: yt.py [--artist=<artist>] " +
+        Logger.info("Usage: yt.py [--artist=<artist>] "
                     "[--album=<album>] --url=<url>")
         sys.exit(1)
 
@@ -187,7 +183,7 @@ def remove_build_files(filename=None):
 
     # Remove all build files if no filename is specified
     # Otherwise, remove the build file with the specified filename
-    if filename:
+    if not filename:
         for file in os.listdir():
             if os.path.splitext(file)[1] in possible_build_extensions:
                 os.remove(file)
@@ -216,12 +212,13 @@ def gather_video_info(artist, album, url, is_playlist):
     info = ytdl.extract_info(url, download=False)
 
     # Get all necessary info and metadata from all videos
+    # "NA" is the default string ytdl uses if that info is unknown
     # Use list of tuples to ensure order of video index in playlists
     # index: Used in logs and metadata, int | None (may not need index)
     # title: Used in logs, str (this is not necessarily the title of the music)
     # track: Used in filename and metadata, str (all music has a title)
     # artist: Used in metadata, str (all music has an artist)
-    # album: Used in metadata and folder name, str | None (may not have album)
+    # album: Used in metadata and folder name, str
     # url: Used to download the video
     # filename: Identical to track
     if is_playlist:
@@ -231,32 +228,36 @@ def gather_video_info(artist, album, url, is_playlist):
         playlist_title = info[0]["playlist_title"]  # Default album name
 
         videos = [
-            {"index": i + 1,
-             "title": info[i].get("title", "Unknown"),
-             "track": info[i].get("track", "Unknown"),
-             "artist": artist if artist else info[i].get("artist", "Unknown"),
-             "album": album if album else info[i].get("album", playlist_title),
-             "url": info[i].get("webpage_url", url),
+            {
+                "index": i + 1,
+                "title": data.get("title", "NA"),
+                "track": data.get("track", "NA"),
+                "artist": artist if artist else data.get("artist", "NA"),
+                "album": album if album else data.get("album", playlist_title),
+                "url": data.get("webpage_url", url),
 
-             # Ensure filename is the same name output file
-             # mentioned in the youtubedl options "outtmpl"
-             "filename": info[i].get("track", "Unknown")}
-            for i in range(len(info))
+                # Ensure filename is the same name output file
+                # mentioned in the youtubedl options "outtmpl"
+                "filename": data.get("track", "NA")
+            }
+            for i, data in enumerate(info)
         ]
         Logger.info("Finished gathering info about playlist")
     else:
         Logger.info("Given URL is an individual video")
         videos = [
-            {"index": None,
-             "title": info.get("title", "Unknown"),
-             "track": info.get("track", "Unknown"),
-             "artist": artist if artist else info.get("artist", "Unknown"),
-             "album": album if album else info.get("album", None),
-             "url": info.get("webpage_url", url),
+            {
+                "index": None,
+                "title": info.get("title", "NA"),
+                "track": info.get("track", "NA"),
+                "artist": artist if artist else info.get("artist", "NA"),
+                "album": album if album else info.get("album", None),
+                "url": info.get("webpage_url", url),
 
-             # Ensure filename is the same name output file
-             # mentioned in the youtubedl options "outtmpl"
-             "filename": info.get("track", "Unknown")}
+                # Ensure filename is the same name output file
+                # mentioned in the youtubedl options "outtmpl"
+                "filename": info.get("track", "NA")
+            }
         ]
         Logger.info("Finished gathering info about the video")
 
@@ -282,12 +283,13 @@ if __name__ == "__main__":
     # Create the album directory and enter it to separate downloaded files
     # without having to move files later and makes it safer to find and
     # remove any temporary build files (e.g. .jpg thumbnails)
-    album = videos[0]["album"]
-    if not os.path.exists(album):
+    album = videos[0]["album"] if videos[0]["album"] else videos[0]["track"]
+
+    if os.path.exists(album):
+        Logger.info(f"Album directory {album}/ already exists")
+    else:
         Logger.info(f"Creating album directory {album}/...")
         os.mkdir(album)
-    else:
-        Logger.info(f"Album directory {album}/ already exists")
     Logger.info(f"Entering album directory {album}/...")
     os.chdir(os.path.join(os.getcwd(), album))
 
@@ -299,11 +301,11 @@ if __name__ == "__main__":
                 # Download the video
                 Logger.info(f"Starting to download {video['title']}...")
                 if is_playlist:
-                    Logger.info(f"Video {video['index']}/{len(videos)} | " +
+                    Logger.info(f"Video {video['index']}/{len(videos)} | "
                                 f"Try {tries}/{max_tries}")
                 else:
                     Logger.info(f"Try {tries}/{max_tries}")
-                ytdl.download([video['url']])
+                ytdl.download([video["url"]])
                 Logger.info(f"Finished downloading {video['title']}")
 
                 # Remove the thumbnail file used in the build process
@@ -312,7 +314,7 @@ if __name__ == "__main__":
 
                 # Add metadata to the mp3 files
                 Logger.info("Adding metadata to mp3 files...")
-                audio_file = EasyID3(video["filename"] + ".mp3")
+                audio_file = EasyID3(f"{video['filename']}.mp3")
 
                 # Downloaded music may not be in album, hence the default Nones
                 # But we assmue all music should have a title and an artist
@@ -320,26 +322,27 @@ if __name__ == "__main__":
                     audio_file["tracknumber"] = str(video["index"])
                 if video["album"]:
                     audio_file["album"] = video["album"]
-                    audio_file["albumartist"] = video["artist"]
-                audio_file["title"] = video["track"]
+                else:
+                    audio_file["album"] = video["track"]
+                audio_file["albumartist"] = video["artist"]
                 audio_file["artist"] = video["artist"]
+                audio_file["title"] = video["track"]
                 audio_file.save()
                 Logger.info("Finished adding metadata to mp3 files")
 
-                Logger.success("Downloaded and processed " +
+                Logger.success("Downloaded and processed "
                                f"{video['filename']}.mp3 successfully!")
 
                 break
             except KeyboardInterrupt:
                 # Keyboard interrupt pauses the program and allows
                 # the user to control the download: skip the video, cancel etc.
-                Logger.warn("Keyboard interrupt detected!")
+                Logger.warn("\nKeyboard interrupt detected!")
                 Logger.warn("Pausing and waiting for user decision...")
 
                 while True:
                     # Ensure the user inputs a valid option
-                    user_decision = input(
-                        Logger.prompt("Retry, Skip, or Exit? (r|s|x) "))
+                    user_decision = input("Retry, Skip, or Exit? (r|s|x) ")
                     if user_decision in {"r", "s", "x"}:
                         break
                     else:
@@ -363,7 +366,7 @@ if __name__ == "__main__":
                     Logger.info("Trying again...")
                 else:
                     # We have tried max_tries times and failed
-                    Logger.warn(f"Exceeded max tries of {max_tries}. " +
+                    Logger.warn(f"Exceeded max tries of {max_tries}. "
                                 "Skipping this video...")
 
                 # Clear the cache files to help with less errors
