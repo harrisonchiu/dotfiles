@@ -140,12 +140,19 @@ def parse_user_arguments():
         sys.exit(1)
 
     # Parse arguments and store them in variables
+    help_message = (
+        "Usage: yt.py [options] --url=<url>\n"
+        "  options:\n"
+        "\t-A --artist=ARTIST\tcreator of the album or single\n"
+        "\t-a --album=ALBUM\tthe name of the album or single\n"
+        "\t-t --tries=TRIES\tmax number of download tries before skipping\n"
+        "\t                \t(default value: 3)\n"
+        "\t-u --url=URL\tYouTube URL of the playlist or single video")
     for argument, value in arguments:
         if argument in ("-h", "--help"):
             Logger.info("Downloads youtube music videos as mp3 files")
             Logger.info("Ideally be in the same directory as this script")
-            Logger.info("Usage: yt.py [--artist=<artist>] "
-                        "[--album=<album>] --url=<url>")
+            Logger.info(help_message)
             sys.exit(0)
         elif argument in ("-A", "--artist"):
             artist = value
@@ -160,8 +167,7 @@ def parse_user_arguments():
 
     if not url:
         Logger.err("No URL specified")
-        Logger.info("Usage: yt.py [--artist=<artist>] "
-                    "[--album=<album>] --url=<url>")
+        Logger.info(help_message)
         sys.exit(1)
 
     return artist, album, url, is_playlist, max_tries
