@@ -218,7 +218,7 @@ def gather_video_info(artist, album, url, is_playlist):
     # title: Used in logs, str (this is not necessarily the title of the music)
     # track: Used in filename and metadata, str (all music has a title)
     # artist: Used in metadata, str (all music has an artist)
-    # album: Used in metadata and folder name, str
+    # album: Used in metadata and folder name, str | None (may not have album)
     # url: Used to download the video
     # filename: Identical to track
     if is_playlist:
