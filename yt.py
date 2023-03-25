@@ -47,6 +47,7 @@ class Logger(object):
     Logger static class to make logging prettier and standardized
     These methods are to create manual log messages by the programmer
     """
+
     @staticmethod
     def info(message):
         print(termcolor.colored("[INFO]", "green"), message)
@@ -68,6 +69,7 @@ class Logger(object):
         print(termcolor.colored("[ERROR]", "red"), message)
 
     """These methods here are to only be used and called by youtube_dl"""
+
     @staticmethod
     def hooks(hook):
         if hook["status"] == "finished":
@@ -87,29 +89,30 @@ youtubedl_options = {
     # Logs
     "logger": Logger(),
     "progress_hooks": [Logger.hooks],
-
     # Download configs
     "sleep_interval": 10,
     "outtmpl": "%(track)s.%(ext)s",
-
     # Only applies to the downloaded webm file
     "format": "bestaudio/best",
     "writethumbnail": True,
-
     # Post-processing the audio from the webm file
     "keepvideo": False,
     "prefer_ffmpeg": True,
-    "postprocessors": [{
-        "key": "FFmpegExtractAudio",
-        "preferredcodec": "mp3",
-        "preferredquality": "192",
-    }, {
-        "key": "FFmpegMetadata",
-    }, {
-        # Must be after metadata because that wipes the thumbnail
-        "key": "EmbedThumbnail",
-        "already_have_thumbnail": True,
-    }],
+    "postprocessors": [
+        {
+            "key": "FFmpegExtractAudio",
+            "preferredcodec": "mp3",
+            "preferredquality": "192",
+        },
+        {
+            "key": "FFmpegMetadata",
+        },
+        {
+            # Must be after metadata because that wipes the thumbnail
+            "key": "EmbedThumbnail",
+            "already_have_thumbnail": True,
+        },
+    ],
     # To actually embed thumbnail into the mp3 file
     "postprocessor_args": ["-id3v2_version", "3"],
 }
@@ -131,9 +134,7 @@ def parse_user_arguments():
     # User arguments
     try:
         arguments, values = getopt.getopt(
-            sys.argv[1:],
-            "hA:a:u:t",
-            ["help", "artist=", "album=", "url=", "tries="]
+            sys.argv[1:], "hA:a:u:t", ["help", "artist=", "album=", "url=", "tries="]
         )
     except getopt.error as err:
         Logger.err("Invalid arguments:", err)
@@ -147,7 +148,8 @@ def parse_user_arguments():
         "\t-a --album=ALBUM\tthe name of the album or single\n"
         "\t-t --tries=TRIES\tmax number of download tries before skipping\n"
         "\t                \t(default value: 3)\n"
-        "\t-u --url=URL\tYouTube URL of the playlist or single video")
+        "\t-u --url=URL\tYouTube URL of the playlist or single video"
+    )
     for argument, value in arguments:
         if argument in ("-h", "--help"):
             Logger.info("Downloads youtube music videos as mp3 files")
@@ -183,7 +185,12 @@ def remove_build_files(filename=None):
 
     # Assume that this is run in the same directory as the file
     possible_build_extensions = {
-        ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp",  # thumbnails
+        ".jpg",
+        ".jpeg",
+        ".png",
+        ".gif",
+        ".bmp",
+        ".webp",  # thumbnails
     }
     removed_build_files = []
 
@@ -241,10 +248,9 @@ def gather_video_info(artist, album, url, is_playlist):
                 "artist": artist if artist else data.get("artist", "NA"),
                 "album": album if album else data.get("album", playlist_title),
                 "url": data.get("webpage_url", url),
-
                 # Ensure filename is the same name output file
                 # mentioned in the youtubedl options "outtmpl"
-                "filename": data.get("track", "NA")
+                "filename": data.get("track", "NA"),
             }
             for i, data in enumerate(info)
         ]
@@ -259,10 +265,9 @@ def gather_video_info(artist, album, url, is_playlist):
                 "artist": artist if artist else info.get("artist", "NA"),
                 "album": album if album else info.get("album", None),
                 "url": info.get("webpage_url", url),
-
                 # Ensure filename is the same name output file
                 # mentioned in the youtubedl options "outtmpl"
-                "filename": info.get("track", "NA")
+                "filename": info.get("track", "NA"),
             }
         ]
         Logger.info("Finished gathering info about the video")
@@ -307,8 +312,10 @@ if __name__ == "__main__":
                 # Download the video
                 Logger.info(f"Starting to download {video['title']}...")
                 if is_playlist:
-                    Logger.info(f"Video {video['index']}/{len(videos)} | "
-                                f"Try {tries}/{max_tries}")
+                    Logger.info(
+                        f"Video {video['index']}/{len(videos)} | "
+                        f"Try {tries}/{max_tries}"
+                    )
                 else:
                     Logger.info(f"Try {tries}/{max_tries}")
                 ytdl.download([video["url"]])
@@ -336,8 +343,9 @@ if __name__ == "__main__":
                 audio_file.save()
                 Logger.info("Finished adding metadata to mp3 files")
 
-                Logger.success("Downloaded and processed "
-                               f"{video['filename']}.mp3 successfully!")
+                Logger.success(
+                    "Downloaded and processed " f"{video['filename']}.mp3 successfully!"
+                )
 
                 break
             except KeyboardInterrupt:
@@ -372,8 +380,9 @@ if __name__ == "__main__":
                     Logger.info("Trying again...")
                 else:
                     # We have tried max_tries times and failed
-                    Logger.warn(f"Exceeded max tries of {max_tries}. "
-                                "Skipping this video...")
+                    Logger.warn(
+                        f"Exceeded max tries of {max_tries}. " "Skipping this video..."
+                    )
 
                 # Clear the cache files to help with less errors
                 Logger.info("Removing youtube-dl cache files...")
