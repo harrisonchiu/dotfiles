@@ -1,0 +1,31 @@
+@import url("color.css");
+@import url("url-bar.css");
+@import url("context-menu.css");
+@import url("extensions-menu.css");
+@import url("main-menu.css");
+
+
+/* Sidebar Menu bg color */
+#browser #sidebar-box {
+    --sidebar-background-color: var(--main-bg-color) !important;
+}
+
+#bookmarksPanel {
+    background-color: var(--main-bg-color) !important;
+}
+
+/* Avoids bright flash */
+#tabbrowser-tabpanels {
+    background-color: var(--uc-light-bkgnd-color, var(--main-bg-color)) !important;
+}
+
+/* Remove line between website content and top bar */
+#navigator-toolbox {
+    border-bottom: 1px solid var(--top-bar-border-bottom-color) !important;
+}
+
+/* ----- Replace email address in hamburger menu */
+/* ----- to any text you want */
+#appMenu-fxa-label2 #appMenu-header-description {
+    display: none !important;
+}
