@@ -2,7 +2,7 @@
   "name": "temporary-file",
   "displayName": "Temporary Files",
   "description": "Quickly create temporary files to use as notes or running code.",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "publisher": "kenroku",
   "homepage": "https://github.com/harrisonchiu/dotfiles/tree/main/vscode-tmpfile#readme",
   "repository": {

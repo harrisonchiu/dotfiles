@@ -16,9 +16,10 @@ export function activate(context: vscode.ExtensionContext) {
         prompt: "Set the name of the temporary file"
     };
 
+    const home = process.platform === "win32" ? "USERPROFILE" : "HOME";
+
     const resolvePath = (filepath: string): string => {
         if (filepath[0] === "~") {
-            const home = process.platform === "win32" ? "USERPROFILE" : "HOME";
             return path.join(process.env[home], filepath.slice(1));
         }
         else {
@@ -31,9 +32,6 @@ export function activate(context: vscode.ExtensionContext) {
             .getConfiguration(extensionName)
             .get("temporaryDirectory") ?? os.tmpdir());
 
-    const onError = (e: NodeJS.ErrnoException) =>
-        vscode.window.showErrorMessage(e.message);
-
     // The command has been defined in the package.json file
     // Now provide the implementation of the command with registerCommand
     // The commandId parameter must match the command field in package.json
@@ -43,7 +41,11 @@ export function activate(context: vscode.ExtensionContext) {
             .then(input => `${temporaryDirectory}${path.sep}${input}`)
             .then(filepath => uniqueFilename.get(filepath))
             .then(filepath => {
-                fs.writeFile(filepath, "", onError);
+                fs.writeFile(filepath, "", err => {
+                    if (err) {
+                        vscode.window.showErrorMessage(err.message);
+                    }
+                });
                 createdTemporaryFiles.push(filepath);
 
                 vscode.workspace
