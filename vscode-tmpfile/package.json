@@ -1,0 +1,64 @@
+{
+  "name": "temporary-file",
+  "displayName": "Temporary Files",
+  "description": "Quickly create temporary files to use as notes or running code.",
+  "version": "0.0.2",
+  "publisher": "kenroku",
+  "homepage": "https://github.com/harrisonchiu/dotfiles/tree/main/vscode-tmpfile#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jgoday/vscode-createtmpfile.git"
+  },
+  "engines": {
+    "vscode": "^1.78.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./out/src/extension",
+  "icon": "images/icon.png",
+  "contributes": {
+    "commands": [
+      {
+        "command": "temporary-file.create",
+        "title": "Create: A New Temporary File"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "temporary-file.create",
+        "key": "ctrl+alt+t",
+        "mac": "cmd+alt+t"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "Temporary File Configurations",
+      "properties": {
+        "temporary-file.deleteOnExit": {
+          "type": "boolean",
+          "default": false,
+          "description": "Remove created temporary files when VScode exits."
+        },
+        "temporary-file.temporaryDirectory": {
+          "type": "string",
+          "default": null,
+          "description": "Temporary directory to create the files in."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "tsc -p ./",
+    "compile": "tsc -watch -p ./",
+    "test": "node ./node_modules/vscode/bin/test"
+  },
+  "devDependencies": {
+    "@types/node": "^18.x",
+    "@types/vscode": "^1.78.0",
+    "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "uniquefilename": "1.1.2"
+  }
+}
