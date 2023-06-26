@@ -33,7 +33,7 @@ prevent if statement from running in /etc/profile.d/update-motd.sh
 echo 'set softtabstop=-1 shiftwidth=4 tabstop=4 expandtab' >> /etc/vim/vimrc
 echo 'set cursorline' >> /etc/vim/vimrc
 echo 'hi CursorLine cterm=NONE ctermbg=234 ctermfg=white' >> /etc/vim/vimrc
-echo 'viminfo+=n~/.locale/viminfo' >> /etc/vim/vimrc  # Moves ~/.viminfo file away
+echo 'set viminfo+=n~/.locale/viminfo' >> /etc/vim/vimrc  # Moves ~/.viminfo file away
 
 LaTeX
     usually install "texlive-latex-extra" because "texlive-full" is too big and
