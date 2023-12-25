@@ -33,7 +33,7 @@
     if (window.location.href.includes("/www.reddit.com/")
         && !window.location.href.includes("/www.reddit.com/gallery/")
         && !window.location.href.includes("/www.reddit.com/poll/")
-        && !window.location.href.includes("/www.reddit.com/media?") {
+        && !window.location.href.includes("/www.reddit.com/media?")) {
         window.location.replace(window.location.toString().replace("/www.reddit.com/", "/old.reddit.com/"));
     }
 })();
