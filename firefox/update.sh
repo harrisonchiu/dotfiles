@@ -34,6 +34,12 @@ cp ./*MODS/search*bar*/*search*engine*buttons*/*.css ./
 cp ./*MODS/privacy*/*change*main*menu*/*.css ./ 
 cp ./*MODS/*control*buttons*/*thicker*windows*/*.css ./ 
 shopt -u nocaseglob
+
+# Add personal CSS fix file for Firefox-Mod-Blur
+# Contents must be inside userChrome.css because the tags do not work when imported
+echo '' >> userChrome.css
+cat ../mod-blur-fix-window-controls.css >> userChrome.css
+echo '' >> userChrome.css
 )
 
 # Move CSS files from WSL to Windows Firefox to actually see the changes
@@ -47,3 +53,8 @@ readonly WINDOWS_FIREFOX_CHROME
 
 rm -rf "${WINDOWS_FIREFOX_CHROME}"
 cp -r "${MAIN_FIREFOX_CSS}" "${WINDOWS_FIREFOX_CHROME}"
+
+# Clean all Firefox mods
+git submodule foreach --recursive git clean -xfd
+git submodule foreach --recursive git reset --hard
+git submodule update --init --recursive

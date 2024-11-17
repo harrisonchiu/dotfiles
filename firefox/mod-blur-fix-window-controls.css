@@ -1,0 +1,22 @@
+/*
+To be used with Firefox-Mod-Blur
+Current CSS does not put the window controls at the very top corner. 
+This can be annoying as moving the cursor to the monitor corner does not hover over the controls
+and the cursor must be readjusted. It is only a couple pixel difference, just remove it.
+
+Contents must be inside userChrome.css because the tags do not work when imported
+*/
+
+@media (-moz-platform: windows) {
+  #TabsToolbar .titlebar-buttonbox-container {
+    padding: 0px !important;
+  }
+  .titlebar-buttonbox-container .titlebar-button {
+    border-radius: 0 !important;
+  }
+  @media not (-moz-bool-pref: "firefoxcss.tabs.on.top.enable") {
+    #navigator-toolbox:not([inFullscreen]) #TabsToolbar .titlebar-buttonbox-container {
+      top: 0px;
+    }
+  }
+}
