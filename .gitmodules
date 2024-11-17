@@ -1,6 +1,3 @@
 [submodule "firefox/Firefox-Mod-Blur"]
 	path = firefox/Firefox-Mod-Blur
 	url = https://github.com/datguypiko/Firefox-Mod-Blur.git
-[submodule "firefox/RedditOldRedesignedDark"]
-	path = firefox/RedditOldRedesignedDark
-	url = https://github.com/Jorenar/RedditOldRedesignedDark

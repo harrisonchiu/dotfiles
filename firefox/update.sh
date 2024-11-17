@@ -1,23 +1,26 @@
 #!/bin/bash
 
-# Updating Firefox CSS
+# Updating Firefox CSS for WSL ONLY
 # Used to move data from WSL to Firefox in Windows
 # TODO: 
 #  - Add option for Linux only
 
-readonly MAIN_FIREFOX_CSS="$1"
-readonly REDDIT_OLD_REDESIGNED="$2"
-readonly WINDOWS_USER_NAME="$3"
+readonly MAIN_FIREFOX_CSS='Firefox-Mod-Blur'
+readonly WINDOWS_USER="$1"
+if [ $# -eq 0 ]; then
+    echo 'Windows user name is not given'
+    exit 1
+fi
 
-cd "$(dirname "$0")"
+cd "$(dirname "$0")" || exit 1
 
 # Clean all Firefox mods
 git submodule foreach --recursive git clean -xfd
 git submodule foreach --recursive git reset --hard
 git submodule update --init --recursive
 
-
-cd "${MAIN_FIREFOX_CSS}"
+( # Subshell to contain the `cd`
+cd "${MAIN_FIREFOX_CSS}" || exit 1
 
 # Extra CSS Mods specific to Firefox-Mod-Blur
 shopt -s nocaseglob
@@ -31,17 +34,16 @@ cp ./*MODS/search*bar*/*search*engine*buttons*/*.css ./
 cp ./*MODS/privacy*/*change*main*menu*/*.css ./ 
 cp ./*MODS/*control*buttons*/*thicker*windows*/*.css ./ 
 shopt -u nocaseglob
+)
 
-# CSS for redesigning old.reddit.com
-readonly REDDIT_CSS="$(echo .css)"
-cp "../${REDDIT_OLD_REDESIGNED}/${REDDIT_CSS}" ./
-printf "\n\n@import url("%s");\n" "${REDDIT_CSS}" >> userContent.css
+# Move CSS files from WSL to Windows Firefox to actually see the changes
+WINDOWS_FIREFOX_CHROME="$(
+    find "/mnt/c/Users/${WINDOWS_USER}/AppData/Roaming/Mozilla/Firefox/Profiles" \
+    -maxdepth 1 \
+    -type d \
+    -name "*default-release" \
+)/chrome"
+readonly WINDOWS_FIREFOX_CHROME
 
-cd ..
-
-
-# Move CSS files to Windows Firefox to actually see the changes
-readonly WINDOWS_FIREFOX_CHROME="/Users/$2/AppData/Roaming/Mozilla/Firefox/Profiles/*default-release/chrome"
-
-rm -r "${WINDOWS_FIREFOX_CHROME}"
+rm -rf "${WINDOWS_FIREFOX_CHROME}"
 cp -r "${MAIN_FIREFOX_CSS}" "${WINDOWS_FIREFOX_CHROME}"
