@@ -17,7 +17,7 @@ cd "$(dirname "$0")" || exit 1
 # Clean all Firefox mods
 git submodule foreach --recursive git clean -xfd
 git submodule foreach --recursive git reset --hard
-git submodule update --init --recursive
+git submodule update --init --recursive --remote --rebase
 
 ( # Subshell to contain the `cd`
 cd "${MAIN_FIREFOX_CSS}" || exit 1
@@ -57,4 +57,4 @@ cp -r "${MAIN_FIREFOX_CSS}" "${WINDOWS_FIREFOX_CHROME}"
 # Clean all Firefox mods
 git submodule foreach --recursive git clean -xfd
 git submodule foreach --recursive git reset --hard
-git submodule update --init --recursive
+git submodule update --init --recursive --remote --rebase
